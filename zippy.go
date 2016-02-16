@@ -12,6 +12,19 @@ type ZipEntry struct {
     Filepath, Url string
 }
 
+func zip_entries() *[]ZipEntry{
+    list := make([]ZipEntry, 2)
+    list[0] = ZipEntry{
+        "images/CC-attribution.png",
+        "http://localhost:3000/images/CC-attribution.png",
+    }
+    list[1] = ZipEntry{
+        "images/facebook-small.png",
+        "http://localhost:3000/images/facebook-small.png",
+    }
+    return &list
+}
+
 func zip_handler(w http.ResponseWriter, r *http.Request) {
     start := time.Now()
     w.Header().Add("Content-Disposition", "attachment; filename=\"test.zip\"")
@@ -19,16 +32,7 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
 
     zipWriter := zip.NewWriter(w)
 
-    zip_entries := make([]ZipEntry, 2)
-    zip_entries[0] = ZipEntry{
-        "images/CC-attribution.png",
-        "http://localhost:3000/images/CC-attribution.png",
-    }
-    zip_entries[1] = ZipEntry{
-        "images/facebook-small.png",
-        "http://localhost:3000/images/facebook-small.png",
-    }
-    for _, zip_entry := range zip_entries {
+    for _, zip_entry := range *zip_entries() {
         log.Printf("Get:\t%s", zip_entry.Url)
         add_download_to_zip(zipWriter, zip_entry.Url, zip_entry.Filepath)
     }
