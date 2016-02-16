@@ -1,10 +1,10 @@
 package main
 
 import (
-    "io"
-    "net/http"
-    "log"
     "archive/zip"
+    "io"
+    "log"
+    "net/http"
     "time"
 )
 
@@ -12,7 +12,7 @@ type ZipEntry struct {
     Filepath, Url string
 }
 
-func zip_entries() *[]ZipEntry{
+func zip_entries() *[]ZipEntry {
     list := make([]ZipEntry, 2)
     list[0] = ZipEntry{
         "images/CC-attribution.png",
@@ -45,7 +45,7 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
     log.Printf("Tzipped:\t(%s)", time.Since(start))
 }
 
-func add_download_to_zip(zipWriter *zip.Writer, url string, file_path_inside_zip string) {
+func add_download_to_zip(zipWriter *zip.Writer, url string, name string) {
     // https://golang.org/pkg/net/http/
     resp, err := http.Get(url)
     if err != nil {
@@ -60,7 +60,7 @@ func add_download_to_zip(zipWriter *zip.Writer, url string, file_path_inside_zip
 
     // https://golang.org/pkg/archive/zip/#FileHeader
     h := &zip.FileHeader{
-        Name:   file_path_inside_zip,
+        Name:   name,
         Method: zip.Deflate,
         Flags:  0x800,
     }
