@@ -16,7 +16,7 @@ func zip_entries() *[]ZipEntry{
     list := make([]ZipEntry, 2)
     list[0] = ZipEntry{
         "images/CC-attribution.png",
-        "http://localhost:3000/images/CC-attribution.png",
+        "http://localhost:3000/images/CC-attribution-not-found.png",
     }
     list[1] = ZipEntry{
         "images/facebook-small.png",
@@ -26,6 +26,7 @@ func zip_entries() *[]ZipEntry{
 }
 
 func zip_handler(w http.ResponseWriter, r *http.Request) {
+    log.Printf("%s\t\t%s", r.Method, r.RequestURI)
     start := time.Now()
     w.Header().Add("Content-Disposition", "attachment; filename=\"test.zip\"")
     w.Header().Add("Content-Type", "application/zip")
@@ -33,7 +34,6 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
     zipWriter := zip.NewWriter(w)
 
     for _, zip_entry := range *zip_entries() {
-        log.Printf("Get:\t%s", zip_entry.Url)
         add_download_to_zip(zipWriter, zip_entry.Url, zip_entry.Filepath)
     }
 
@@ -42,16 +42,21 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
     }
 
-    log.Printf("%s\t%s\t%s", r.Method, r.RequestURI, time.Since(start))
+    log.Printf("Tzipped:\t(%s)", time.Since(start))
 }
 
 func add_download_to_zip(zipWriter *zip.Writer, url string, file_path_inside_zip string) {
+    // https://golang.org/pkg/net/http/
     resp, err := http.Get(url)
-    defer resp.Body.Close()
     if err != nil {
-        log.Fatal(err)
+        log.Print(err)
         return
     }
+    log.Printf("adding:\t%d %s", resp.StatusCode, url)
+    if resp.StatusCode != 200 {
+        return
+    }
+    defer resp.Body.Close()
 
     // https://golang.org/pkg/archive/zip/#FileHeader
     h := &zip.FileHeader{
@@ -62,7 +67,8 @@ func add_download_to_zip(zipWriter *zip.Writer, url string, file_path_inside_zip
     h.SetModTime(time.Now())
     f, err := zipWriter.CreateHeader(h)
     if err != nil {
-        log.Fatal(err)
+        log.Print(err)
+        return
     }
 
     io.Copy(f, resp.Body)
