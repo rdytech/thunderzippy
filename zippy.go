@@ -37,26 +37,39 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
         add_download_to_zip(zipWriter, zip_entry.Url, zip_entry.Filepath)
     }
 
-    zipWriter.Close()
+    err := zipWriter.Close()
+    if err != nil {
+        log.Fatal(err)
+    }
 
     log.Printf("%s\t%s\t%s", r.Method, r.RequestURI, time.Since(start))
 }
 
 func add_download_to_zip(zipWriter *zip.Writer, url string, file_path_inside_zip string) {
+    resp, err := http.Get(url)
+    defer resp.Body.Close()
+    if err != nil {
+        log.Fatal(err)
+        return
+    }
+
+    // https://golang.org/pkg/archive/zip/#FileHeader
     h := &zip.FileHeader{
         Name:   file_path_inside_zip,
         Method: zip.Deflate,
         Flags:  0x800,
     }
+    h.SetModTime(time.Now())
+    f, err := zipWriter.CreateHeader(h)
+    if err != nil {
+        log.Fatal(err)
+    }
 
-    f, _ := zipWriter.CreateHeader(h)
-
-    resp, _ := http.Get(url)
-    defer resp.Body.Close()
     io.Copy(f, resp.Body)
 }
 
 func main() {
+    log.Printf("Thunderzippy is go")
     http.HandleFunc("/zip/", zip_handler)
     http.ListenAndServe(":8080", nil)
 }
