@@ -19,6 +19,13 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
     file_path_inside_zip := "images/CC-attribution.png"
     log.Printf("Get:\t%s", url)
 
+    add_download_to_zip(zipWriter, url, file_path_inside_zip)
+    zipWriter.Close()
+
+    log.Printf("%s\t%s\t%s", r.Method, r.RequestURI, time.Since(start))
+}
+
+func add_download_to_zip(zipWriter *zip.Writer, url string, file_path_inside_zip string) {
     h := &zip.FileHeader{
         Name:   file_path_inside_zip,
         Method: zip.Deflate,
@@ -30,10 +37,6 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
     resp, _ := http.Get(url)
     defer resp.Body.Close()
     io.Copy(f, resp.Body)
-
-    zipWriter.Close()
-
-    log.Printf("%s\t%s\t%s", r.Method, r.RequestURI, time.Since(start))
 }
 
 func main() {
