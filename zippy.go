@@ -8,10 +8,17 @@ import (
     "io"
     "log"
     "net/http"
+    "os"
     "time"
 )
 
 var redisPool *redigo.Pool
+var config = Configuration{}
+
+type Configuration struct {
+    RedisServerAndPort string
+    Port               string
+}
 
 type ZipEntry struct {
     Filepath, Url string
@@ -110,11 +117,12 @@ func getFileListFromRedis(ref string) (files []*ZipEntry, err error) {
 }
 
 func initRedis() {
+    log.Printf("Opening Redis: %s", config.RedisServerAndPort)
     redisPool = &redigo.Pool{
         MaxIdle:     10,
         IdleTimeout: 1 * time.Second,
         Dial: func() (redigo.Conn, error) {
-            return redigo.Dial("tcp", "127.0.0.1:6379")
+            return redigo.Dial("tcp", config.RedisServerAndPort)
         },
         TestOnBorrow: func(c redigo.Conn, t time.Time) (err error) {
             _, err = c.Do("PING")
@@ -126,9 +134,21 @@ func initRedis() {
     }
 }
 
+func initConfig() {
+    conf := "thunderzippy_conf.json"
+    configFile, _ := os.Open(conf)
+    log.Printf("Reading config %s", conf)
+    decoder := json.NewDecoder(configFile)
+    err := decoder.Decode(&config)
+    if err != nil {
+        panic("Error reading conf")
+    }
+}
+
 func main() {
-    log.Printf("Thunderzippy is go")
+    initConfig()
     initRedis()
+    log.Printf("Thunderzippy is go on port %s", config.Port)
     http.HandleFunc("/zip/", zipHandler)
-    http.ListenAndServe(":8080", nil)
+    http.ListenAndServe(":"+config.Port, nil)
 }

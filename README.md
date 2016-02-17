@@ -24,6 +24,11 @@ files = [
 ].to_json
 r.set('zip:1', files)
 ```
+## Configure
+
+```
+cp sample_conf.json $GOPATH/thunderzippy_conf.json
+```
 
 ## Run
 $ $GOPATH/bin/zippy
