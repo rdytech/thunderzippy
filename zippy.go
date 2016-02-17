@@ -4,11 +4,11 @@ import (
     "archive/zip"
     "encoding/json"
     "errors"
+    redigo "github.com/garyburd/redigo/redis"
     "io"
     "log"
     "net/http"
     "time"
-    redigo "github.com/garyburd/redigo/redis"
 )
 
 var redisPool *redigo.Pool
@@ -17,7 +17,7 @@ type ZipEntry struct {
     Filepath, Url string
 }
 
-func zip_handler(w http.ResponseWriter, r *http.Request) {
+func zipHandler(w http.ResponseWriter, r *http.Request) {
     log.Printf("%s\t\t%s", r.Method, r.RequestURI)
     start := time.Now()
 
@@ -41,7 +41,7 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
     zipWriter := zip.NewWriter(w)
 
     for _, file := range files {
-        add_download_to_zip(zipWriter, file.Url, file.Filepath)
+        addDownloadToZip(zipWriter, file.Url, file.Filepath)
     }
 
     err = zipWriter.Close()
@@ -49,10 +49,10 @@ func zip_handler(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
     }
 
-    log.Printf("Thunderzipped:\t%d files (%s)", len(files),time.Since(start))
+    log.Printf("Thunderzipped:\t%d files (%s)", len(files), time.Since(start))
 }
 
-func add_download_to_zip(zipWriter *zip.Writer, url string, name string) {
+func addDownloadToZip(zipWriter *zip.Writer, url string, name string) {
     // https://golang.org/pkg/net/http/
     resp, err := http.Get(url)
     if err != nil {
@@ -109,7 +109,7 @@ func getFileListFromRedis(ref string) (files []*ZipEntry, err error) {
     return
 }
 
-func InitRedis() {
+func initRedis() {
     redisPool = &redigo.Pool{
         MaxIdle:     10,
         IdleTimeout: 1 * time.Second,
@@ -128,7 +128,7 @@ func InitRedis() {
 
 func main() {
     log.Printf("Thunderzippy is go")
-    InitRedis()
-    http.HandleFunc("/zip/", zip_handler)
+    initRedis()
+    http.HandleFunc("/zip/", zipHandler)
     http.ListenAndServe(":8080", nil)
 }
