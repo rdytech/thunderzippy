@@ -6,23 +6,43 @@ https://golang.org/doc/install
 cd $GOPATH
 go install github.com/s01ipsist/zippy
 
+## Setup download data on Redis
+
+example using Ruby redis client
+```ruby
+require 'json'
+require 'redis'
+r = Redis.new
+files = [
+  {
+    url: "http://localhost:3000/images/CC-attribution-not-found.png",
+    filepath: "images/CC-attribution.png"
+  },{
+    url: "http://localhost:3000/images/facebook-small.png",
+    filepath: 'images/facebook-small.png'
+  }
+].to_json
+r.set('zip:1', files)
+```
+
 ## Run
 $ $GOPATH/bin/zippy
-2016/02/17 10:55:20 Thunderzippy is go
-2016/02/17 10:55:23 GET     /zip/
-2016/02/17 10:55:23 adding: 404 http://localhost:3000/images/CC-attribution-not-found.png
-2016/02/17 10:55:23 adding: 200 http://localhost:3000/images/facebook-small.png
-2016/02/17 10:55:23 Tzipped:  (68.016689ms)
+
+2016/02/17 16:32:27 Thunderzippy is go
+2016/02/17 16:32:35 GET   /zip/?ref=1
+2016/02/17 16:32:35 adding: 404 http://localhost:3000/images/CC-attribution-not-found.png
+2016/02/17 16:32:35 adding: 200 http://localhost:3000/images/facebook-small.png
+2016/02/17 16:32:35 Thunderzipped:  2 files (43.065781ms)
 
 ## Use
 
 ```
-$ curl http://localhost:8080/zip/ -o "test.zip"
+$ curl http://localhost:8080/zip/?ref=1 -o "test.zip"
 $ unzip -l test.zip
 Archive:  test.zip
   Length     Date   Time    Name
  --------    ----   ----    ----
-     1042  02-16-16 21:55   images/facebook-small.png
+     1042  02-17-16 03:32   images/facebook-small.png
  --------                   -------
      1042                   1 file
 ```
