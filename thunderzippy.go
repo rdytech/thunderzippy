@@ -42,7 +42,7 @@ func zipHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    w.Header().Add("Content-Disposition", "attachment; filename=\"test.zip\"")
+    w.Header().Add("Content-Disposition", "attachment; filename=\"download.zip\"")
     w.Header().Add("Content-Type", "application/zip")
 
     zipWriter := zip.NewWriter(w)

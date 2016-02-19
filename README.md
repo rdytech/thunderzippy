@@ -1,10 +1,25 @@
-# Zippy
+# Thunderzippy
 
-https://golang.org/doc/install
+Secure streaming zipped download bundles.
+
+A microservice that takes a list of remote files and provides a url that streams
+a zipped bundle of all those files.
+
+Concept based on an idea from
+http://engineroom.teamwork.com/how-to-securely-provide-a-zip-download-of-a-s3-file-bundle/
 
 ## Install
+https://golang.org/doc/install
+```
 cd $GOPATH
-go install github.com/s01ipsist/zippy
+# this is a workaround for private git repos, standard would be
+# go get github.com/jobready/thunderzippy
+mkdir -p src/github.com/jobready
+cd src/github.com/jobready
+git clone git@github.com:jobready/thunderzippy.git
+
+go install github.com/jobready/thunderzippy
+```
 
 ## Setup download data on Redis
 
@@ -31,20 +46,22 @@ cp sample_conf.json $GOPATH/thunderzippy_conf.json
 ```
 
 ## Run
-$ $GOPATH/bin/zippy
+```
+$ $GOPATH/bin/thunderzippy
 
 2016/02/17 16:32:27 Thunderzippy is go
 2016/02/17 16:32:35 GET   /zip/?ref=1
 2016/02/17 16:32:35 adding: 404 http://localhost:3000/images/CC-attribution-not-found.png
 2016/02/17 16:32:35 adding: 200 http://localhost:3000/images/facebook-small.png
 2016/02/17 16:32:35 Thunderzipped:  2 files (43.065781ms)
+```
 
 ## Use
 
 ```
-$ curl http://localhost:8080/zip/?ref=1 -o "test.zip"
-$ unzip -l test.zip
-Archive:  test.zip
+$ curl http://localhost:8080/zip/?ref=1 -o "download.zip"
+$ unzip -l download.zip
+Archive:  download.zip
   Length     Date   Time    Name
  --------    ----   ----    ----
      1042  02-17-16 03:32   images/facebook-small.png
