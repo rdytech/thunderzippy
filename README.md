@@ -58,15 +58,23 @@ $ $GOPATH/bin/thunderzippy
 
 ## Use
 
+### Create zip reference
 ```
-$ curl http://localhost:8080/zip/?ref=1 -o "download.zip"
+$ curl -H "Content-Type: application/json" -X POST -d '[{"Filepath":"images/example.jpg","Url":"https://upload.wikimedia.org/wikipedia/mediawiki/a/a9/Example.jpg"}]' http://localhost:8080/zip/
+
+{"ref":"z95h07"}
+```
+
+### Download zip by ID
+```
+$ curl http://localhost:8080/zip/?ref=z95h07 -o "download.zip"
 $ unzip -l download.zip
 Archive:  download.zip
   Length     Date   Time    Name
  --------    ----   ----    ----
-     1042  02-17-16 03:32   images/facebook-small.png
+    61136  02-26-16 03:00   images/example.jpg
  --------                   -------
-     1042                   1 file
+    61136                   1 file
 ```
 
 http://stackoverflow.com/questions/11692860/how-can-i-efficiently-download-a-large-file-using-go
