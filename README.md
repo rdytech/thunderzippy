@@ -79,3 +79,9 @@ Archive:  download.zip
 
 http://stackoverflow.com/questions/11692860/how-can-i-efficiently-download-a-large-file-using-go
 Note that io.Copy reads 32kb (maximum) from input and writes them to output, then repeats. So don't worry about memory
+
+
+### Server installation
+Thunderzippy can be run directly on port 80 or as a proxied service behind nginx using the sample_nginx.conf config.
+
+sample_upstart.conf provides a sample Upstart script.
