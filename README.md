@@ -21,6 +21,12 @@ go get github.com/jobready/thunderzippy
 cp sample_conf.json $GOPATH/thunderzippy_conf.json
 ```
 
+This contains two options:
+
+`RedisServerAndPort` : IP and port of the attached Redis resource
+
+`Port` : the port that the HTTP server will bind to
+
 ## Run
 ```
 $ $GOPATH/bin/thunderzippy
@@ -51,3 +57,9 @@ Archive:  download.zip
 Thunderzippy can be run directly on port 80 or as a proxied service behind nginx using the sample_nginx.conf config.
 
 sample_upstart.conf provides a sample Upstart script.
+
+### License
+
+Thunderzippy is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+
+Patches, suggestions and comments are welcome.
