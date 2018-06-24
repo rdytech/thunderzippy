@@ -56,7 +56,7 @@ func ZipReferenceDownload(w http.ResponseWriter, r *http.Request) {
 
 func ZipReferenceCreate(w http.ResponseWriter, r *http.Request) {
   var files []*ZipEntry
-  
+
   body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
   if err != nil {
     http.Error(w, "Data was too limited to allow", 403)
@@ -67,11 +67,11 @@ func ZipReferenceCreate(w http.ResponseWriter, r *http.Request) {
     http.Error(w, "Wrong Data. Please try again", 403)
     return
   }
-  
+
   if err := json.Unmarshal(body, &files); err != nil {
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     w.WriteHeader(422)
-    
+
     if err := json.NewEncoder(w).Encode(err); err != nil {
       http.Error(w, "Wrong Data. Please try again", 403)
       return

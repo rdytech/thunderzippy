@@ -7,18 +7,19 @@ import (
   "time"
   "errors"
   "math/rand"
-  redigo "github.com/garyburd/redigo/redis"
+  "os"
+  redigo "github.com/gomodule/redigo/redis"
 )
 
 var redisPool *redigo.Pool
 
 func init() {
-  log.Printf("Opening Redis: %s", config.RedisServerAndPort)
+  log.Printf("Opening Redis: %s", os.Getenv("REDIS_ADDRESS"))
   redisPool = &redigo.Pool{
     MaxIdle:     10,
     IdleTimeout: 1 * time.Second,
     Dial: func() (redigo.Conn, error) {
-      return redigo.Dial("tcp", config.RedisServerAndPort)
+      return redigo.Dial("tcp", os.Getenv("REDIS_ADDRESS"))
     },
     TestOnBorrow: func(c redigo.Conn, t time.Time) (err error) {
       _, err = c.Do("PING")
@@ -33,7 +34,7 @@ func init() {
 func getFileListByZipReferenceId(id string) (files []*ZipEntry, err error) {
   redis := redisPool.Get()
   defer redis.Close()
-  
+
   // Get the value from Redis
   result, err := redis.Do("GET", "zip:" + id)
   if err != nil || result == nil {
@@ -59,10 +60,10 @@ func getFileListByZipReferenceId(id string) (files []*ZipEntry, err error) {
 func CreateZipReference(files []*ZipEntry) (ref_id_string string) {
   redis := redisPool.Get()
   defer redis.Close()
-  
+
   filesJson, err := json.Marshal(files)
   HandleError(err)
-  
+
   //get new id redis
   ref_id, err := redis.Do("INCR", "zip_reference_id")
   HandleError(err)
@@ -71,7 +72,7 @@ func CreateZipReference(files []*ZipEntry) (ref_id_string string) {
   // Save JSON files to Redis
   _, err = redis.Do("SET", "zip:" + ref_id_string, filesJson)
   HandleError(err)
-  
+
   return
 }
 
