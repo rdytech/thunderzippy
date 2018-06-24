@@ -58,6 +58,14 @@ Thunderzippy can be run directly on port 80 or as a proxied service behind nginx
 
 sample_upstart.conf provides a sample Upstart script.
 
+### Docker
+
+```
+cp docker_conf.json thunderzippy_conf.json
+docker-compose build
+docker-compose up
+```
+
 ### License
 
 Thunderzippy is released under the [MIT License](http://www.opensource.org/licenses/MIT).
