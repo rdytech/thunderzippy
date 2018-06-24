@@ -1,4 +1,6 @@
-FROM golang:1.10
+FROM golang:alpine
+
+RUN apk add --no-cache git
 
 WORKDIR /go/src/app
 COPY . .
