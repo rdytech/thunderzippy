@@ -9,28 +9,17 @@ Concept based on an idea from
 http://engineroom.teamwork.com/how-to-securely-provide-a-zip-download-of-a-s3-file-bundle/
 then simplified to work as a simple RESTful API.
 
-## Install
-https://golang.org/doc/install
+## Install and Run
+
 ```
-cd $GOPATH
-go get github.com/jobready/thunderzippy
+docker-compose build
+docker-compose up
 ```
 
-## Configure
-```
-cp sample_conf.json $GOPATH/thunderzippy_conf.json
-```
+### Environment Variables
 
-This contains two options:
-
-`RedisServerAndPort` : IP and port of the attached Redis resource
-
-`Port` : the port that the HTTP server will bind to
-
-## Run
-```
-$ $GOPATH/bin/thunderzippy
-```
+`REDIS_ADDRESS` : Address with port of Redis host e.g. `127.0.0.1:6379`
+`PORT` : Local port the HTTP server will bind to
 
 ## Use
 
@@ -52,11 +41,6 @@ Archive:  download.zip
  --------                   -------
     61136                   1 file
 ```
-
-### Server installation
-Thunderzippy can be run directly on port 80 or as a proxied service behind nginx using the sample_nginx.conf config.
-
-sample_upstart.conf provides a sample Upstart script.
 
 ### License
 
