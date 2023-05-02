@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: thunderzippy
+  annotations:
+    github.com/project-slug: rdytech/thunderzippy
+spec:
+  type: other
+  lifecycle: unknown
+  owner: platform-engineering
