@@ -89,8 +89,16 @@ func ZipReferenceCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func addDownloadToZip(zipWriter *zip.Writer, url string, name string) {
-  // https://golang.org/pkg/net/http/
-  resp, err := http.Get(url)
+  // Create HTTP client and request with User-Agent header
+  client := &http.Client{}
+  req, err := http.NewRequest("GET", url, nil)
+  if err != nil {
+    log.Print(err)
+    return
+  }
+  req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Thunderzippy/1.0)")
+
+  resp, err := client.Do(req)
   if err != nil {
     log.Print(err)
     return
