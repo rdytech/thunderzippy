@@ -1,8 +1,6 @@
-version: '3'
-
 services:
   redis:
-    image: redis:3
+    image: redis:7.4-alpine
 
   app:
     build: .

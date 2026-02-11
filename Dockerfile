@@ -1,11 +1,12 @@
-FROM golang:1-alpine
+FROM golang:1.23-alpine3.20
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git ca-certificates
 
 WORKDIR /go/src/app
 COPY . .
 
-RUN go get -d -v ./...
-RUN go install -v ./...
+RUN go mod tidy
+RUN go mod download
+RUN go build -o app .
 
-CMD ["app"]
+CMD ["./app"]
